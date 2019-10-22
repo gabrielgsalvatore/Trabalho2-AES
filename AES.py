@@ -2,7 +2,6 @@ import binascii
 import numpy as np
 from collections import deque
 
-matriz_estado = [None] * 4
 key_schedule = [None] * 11
 s_box = [None] * 16
 round_constant = [None] * 10
@@ -71,11 +70,12 @@ def gerar_roundConstant(): #Popular a lista de round_constant
     round_constant[8] = '0x1b'
     round_constant[9] = '0x36'
 
-def gerar_chave(chave): #Geramos a matriz estado a partir da chave
+def popular_matriz_estado(texto_simples):
     index = 0
     index_aux = 0
+    matriz_estado = [None] * 4
     matriz_aux = [None] * 4
-    for x in chave:      
+    for x in texto_simples:      
         matriz_aux[index] = hex(ord(x))
         index = index+1
         if index == 4:
@@ -83,9 +83,23 @@ def gerar_chave(chave): #Geramos a matriz estado a partir da chave
             matriz_aux = [None] * 4
             index_aux = index_aux + 1
             index = 0
-    gerar_key_schedule()
+    return matriz_estado
+
+def gerar_chave(chave): #Geramos a matriz estado a partir da chave
+    index = 0
+    index_aux = 0
+    matriz_estado = popular_matriz_estado(chave)
+    # for x in chave:      
+    #     matriz_aux[index] = hex(ord(x))
+    #     index = index+1
+    #     if index == 4:
+    #         matriz_estado[index_aux] = matriz_aux
+    #         matriz_aux = [None] * 4
+    #         index_aux = index_aux + 1
+    #         index = 0
+    gerar_key_schedule(matriz_estado)
     
-def gerar_key_schedule(): #Geramos o key schedule
+def gerar_key_schedule(matriz_estado): #Geramos o key schedule
     round_key_0 = [None] * 4
     word_one = [None] * 4 
     word_two = [None] * 4
@@ -112,17 +126,36 @@ def gerar_primeira_round_key():
     for roundkey in range(1,11): #iterar por todas as roundkeys 
         roundkey_aux = key_schedule[roundkey - 1] #Pega a roundkey anterior para os cálculos
         word_aux = roundkey_aux[len(roundkey_aux)-1] #Pega a última palavra da roundkey anterior para gerar as primeiras roundkeys
-        word_sbox = [None] * 4 #Inicializando a nossa palavra da s-box
         d = deque(word_aux) #usando deque para rotacionar a palavra
         d.rotate(-1) #rotacionando a palavra para a esquerda
-        for i in range(4): #para cada valor hexa da palavra achar a linha e coluna
-            valor_lin = d[i][2:3] #retirando o 0x do hexa e pegando o primeiro valor
-            valor_col = d[i][3:4]  #retirando 0x do hexa e pegando o segundo valor
-            word_sbox[i] = getSbox(valor_lin, valor_col) #populando a word_sbox a partir dos valores hexa 
+        word_sbox = get_word_sbox(d) #retorna a palavra comparada com a s-table
         word_roundkey = getRoundKey(roundkey-1) #busca a roundkey constant a partir da rodada
         first_rk = xorList(word_sbox, word_roundkey) #xor da round constant com a word da sbox
         final_first_rk = xorList(first_rk, roundkey_aux[0]) #xor do xor anterior com a primeira palavra da roundkey anterior
         key_schedule[roundkey] = gerar_restantes_round_key(final_first_rk, roundkey) #Gera o restante das palavras desta roundkey passando a rodada e a primeira palavra gerada
+
+def get_word_sbox(word):
+    word_sbox = [None] * 4
+    for i in range(4): #para cada valor hexa da palavra achar a linha e coluna
+        valor_lin = word[i][2:3] #retirando o 0x do hexa e pegando o primeiro valor
+        valor_col = word[i][3:4]  #retirando 0x do hexa e pegando o segundo valor
+        word_sbox[i] = getSbox(valor_lin, valor_col) #populando a word_sbox a partir dos valores hexa
+    return word_sbox
+
+def get_matrix_sbox(matriz):
+    word_sbox = [None] * 4
+    matrix_sbox = [None] * 4
+    new_word_sbox = [None] * 4
+    for i in range(4):
+        word_sbox = matriz[i]
+        for x in range(4):
+            valor_lin = word_sbox[x][2:3] #retirando o 0x do hexa e pegando o primeiro valor
+            valor_col = word_sbox[x][3:4]  #retirando 0x do hexa e pegando o segundo valor
+            new_word_sbox[x] = getSbox(valor_lin, valor_col)
+
+        matrix_sbox[i] = new_word_sbox
+        new_word_sbox = [None] * 4
+    return matrix_sbox
 
 def gerar_restantes_round_key(first_rk, roundkey):
     new_word = [None] * 4 #inicializa uma nova word
@@ -198,6 +231,18 @@ def getSbox(valor_lin, valor_col):
 
     return(s_box[index_lin_asint][index_col_asint]) #retorna o respectivo valor na s_box
 
+def cifrar_texto(texto_simples):
+    matriz_estado_ts = popular_matriz_estado(texto_simples)
+    print("Matriz texto simples")
+    print(matriz_estado_ts)
+    matriz_estado_ts_xor = [None] * 4
+    matriz_aux = key_schedule[0]
+    for i in range(4):
+        matriz_estado_ts_xor[i] = xorList(matriz_estado_ts[i], matriz_aux[i])
+    print(matriz_estado_ts_xor)
+    matriz_estado_ts_xor_sbox = get_matrix_sbox(matriz_estado_ts_xor)
+    print(matriz_estado_ts_xor_sbox)
+
 
 def main():
     gerar_sbox()
@@ -214,6 +259,7 @@ def main():
     print(key_schedule[8])
     print(key_schedule[9])
     print(key_schedule[10])
+    cifrar_texto("DESENVOLVIMENTO!")
 
 
 if __name__ == "__main__":
