@@ -119,14 +119,6 @@ def gerar_chave(chave): #Geramos a matriz estado a partir da chave
     index = 0
     index_aux = 0
     matriz_estado = popular_matriz_estado(chave)
-    # for x in chave:      
-    #     matriz_aux[index] = hex(ord(x))
-    #     index = index+1
-    #     if index == 4:
-    #         matriz_estado[index_aux] = matriz_aux
-    #         matriz_aux = [None] * 4
-    #         index_aux = index_aux + 1
-    #         index = 0
     gerar_key_schedule(matriz_estado)
     
 def gerar_key_schedule(matriz_estado): #Geramos o key schedule
@@ -334,8 +326,10 @@ def multiply_galois(fv,sv):
     print(soma)
 
     soma_mixed = e_table[int("0x0"+hex(soma)[2:3],0)][int("0x0"+hex(soma)[3:4],0)]
-    print(soma_mixed)
-    return soma_mixed
+    print(soma_mixed) #todo aqui nos trem que ta dando rrado
+    soma_mixed_final = l_table[int("0x0"+soma_mixed[2:3],0)][int("0x0"+soma_mixed[3:4],0)]
+    print(soma_mixed_final)
+    return soma_mixed_final
             
 
 def main():
