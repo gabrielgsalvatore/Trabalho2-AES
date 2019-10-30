@@ -1,6 +1,4 @@
 import binascii
-import numpy as np
-import itertools
 from collections import deque
 
 key_schedule = [None] * 11
@@ -236,23 +234,22 @@ def getRoundKey(rk):
     return word_rk
 
 def cifrar_texto(texto_simples):
-    matriz_estado_ts = popular_matriz_estado(texto_simples)
+    matriz_estado_ts = popular_matriz_estado(texto_simples) #cria uma matriz estado com o texto_simples q vamo cifra
     print("Matriz texto simples")
     print(matriz_estado_ts)
     matriz_estado_ts_xor = [None] * 4
     for i in range(4):
-        matriz_estado_ts_xor[i] = xorList(matriz_estado_ts[i], key_schedule[0][i])
-    print(matriz_estado_ts_xor)
-    matriz_rodada = matriz_estado_ts_xor
-    for rodada in range(1,2):
+        matriz_estado_ts_xor[i] = xorList(matriz_estado_ts[i], key_schedule[0][i]) #faz xor dessa matriz com roundkey0
+    print(matriz_estado_ts_xor) #printa o xor dessa matriz
+    matriz_rodada = matriz_estado_ts_xor #define que agora essa é a matriz que vamos usar
+    for rodada in range(1,2): #para cada umas das teoricamente 10 rodadas, ta só 2 pra testar
         matriz_transposta = [None] * 4
-        print("ADDROUNDKEY ROUND "+str(rodada))
-        matriz_estado_ts_xor_sbox = get_matrix_sbox(matriz_rodada)
-        print("Subbyte")
+        print("ADDROUNDKEY ROUND "+str(rodada)) 
+        matriz_estado_ts_xor_sbox = get_matrix_sbox(matriz_rodada) #pega a matrizrodada do momento e pega todos os valores dela da sbox e joga nessa nossa nova matriz que vai ser a etapa subbyte
+        print("Subbyte") #printa a matriz completa da etapa subbyte
         print(matriz_estado_ts_xor_sbox)
         print("Just created matriz transposta")
         matriz_transposta = transpose_list(matriz_estado_ts_xor_sbox)
-        print(matriz_transposta)
         matriz_rot_1 = deque(matriz_transposta[1])
         matriz_rot_2 = deque(matriz_transposta[2])
         matriz_rot_3 = deque(matriz_transposta[3])
@@ -263,10 +260,10 @@ def cifrar_texto(texto_simples):
         matriz_transposta[2] = matriz_rot_2 
         matriz_transposta[3] = matriz_rot_3
         matriz_estado_ts_xor_sbox = transpose_list(matriz_transposta)
-        print("shiftrow")
-        print(matriz_estado_ts_xor_sbox)
-        print("Mixcolumn")
-        matriz_estado_mixcolumn = gerar_mixcolumn(matriz_estado_ts_xor_sbox)
+        print("shiftrow") 
+        print(matriz_estado_ts_xor_sbox) #Printa a matriz da etapa shiftrow que é a rotação de cada linha 0,1,2,3 lá
+        print("Mixcolumn") #Eis aqui o problema
+        matriz_estado_mixcolumn = gerar_mixcolumn(matriz_estado_ts_xor_sbox) #Esse método vai retornar a nossa matriz mixcolumn
         print(matriz_estado_mixcolumn)
         addroundkey = [None] * 4
         for i in range(4):
@@ -283,53 +280,67 @@ def transpose_list(list):
 
 def gerar_mixcolumn(matriz):
     new_matrix = [None] * 4
-    matriz_transp = matriz
-    print(matriz_transp)
+    matriz_transp = matriz #ignora o nome antes estava transpondo a matriz mas agora ela ja vem transposta
 
     for i in range(4):
-        this_word = matriz_transp[i]
+        this_word = matriz_transp[i] #pega a word que vamos multiplicar
         word_final = [None] * 4
         for x in range(4):
             this_value = this_word
-            this_multiplier = multiply_matrix[x]
-            print(this_value)
+            this_multiplier = multiply_matrix[x] #pega a coluna da matriz de multiplicacao
+            print(this_value) #saber qual é a word que estamos usando pra multiplicar
             new_value_0 = multiply_galois(this_value[0] ,this_multiplier[0])
+            print(new_value_0) #esse seria o resultado daquela formula b1 = r1 * 1 (alterando claro os valores)
             new_value_1 = multiply_galois(this_value[1] ,this_multiplier[1])
+            print(new_value_1) #seguindo a logica esse seria o b1 = r2*2 (mas com seu respectivos valores)
             new_value_2 = multiply_galois(this_value[2] ,this_multiplier[2])
+            print(new_value_2)#mesma coisa
             new_value_3 = multiply_galois(this_value[3] ,this_multiplier[3])
-            new_xor_0 = xorHex(new_value_0,new_value_1)
+            print(new_value_3) #mesma coisa teoricamente cada new_value desse tem os valores pro calculo de bx = rx * x xor rx * x xor rx * x 
+            new_xor_0 = xorHex(new_value_0,new_value_1) #aqui vamo pega e efetuar os xor da formula
+            print(new_xor_0) #faz o xor
             new_xor_1 = xorHex(new_xor_0,new_value_2)
+            print(new_xor_1) #faz o xor do xor anterior com o prox valor
             new_xor_2 = xorHex(new_xor_1,new_value_3)
-            word_final[x] = new_xor_2
+            print(new_xor_2) #faz o xor do xor anterior com o ultimo valor
+            word_final[x] = new_xor_2 #joga esse valor na nossa lista
         new_matrix[i] = word_final
     return new_matrix
+
+def get_e_table(value):
+    valor_lin = "0x0"+value[2:3]
+    valor_col = "0x0"+value[3:4]
+    return e_table[int(valor_lin,0)][int(valor_col,0)]
     
 def multiply_galois(fv,sv):
-    print("start")
-    print(fv)
-    print(sv)
-    if fv == "0x00" or sv == "0x00":
-        return("0x00")
-    if fv == "0x01":
-        return(sv)
+    if fv == "0x00": #se algum desses valores for 0 ou 1 entra naquelas regrinhas
+        return "0x00"
+    elif sv == "0x00":
+        return "0x00"
+    elif fv == "0x01":
+        return sv
     elif sv == "0x01":
-        return(fv)
+        return fv
+    print("Multiplicando "+fv+sv) #printa quais valores a gente ta fazendo a multiplicação de galois mixcolumn
     valor_lin = "0x0"+fv[2:3]
     valor_col = "0x0"+fv[3:4]
-    resultado_0 = l_table[int(valor_lin,0)][int(valor_col,0)]
+    resultado_0 = l_table[int(valor_lin,0)][int(valor_col,0)] #pega na l-table o valor do primeiro valor fv
     valor_lin = "0x0"+sv[2:3]
     valor_col = "0x0"+sv[3:4]
-    resultado_1 = l_table[int(valor_lin,0)][int(valor_col,0)]
-    soma = int(resultado_0,0) + int(resultado_1,0)
+    resultado_1 = l_table[int(valor_lin,0)][int(valor_col,0)] #pega na l-table o valor do segundo valor sv
+    print(resultado_0) #printa esses 2 valores que pegamo da l-table
+    print(resultado_1)
+    soma = int(resultado_0,0) + int(resultado_1,0) #se nao cai em nenhuma dessas excecoes ele soma os 2 valores, convertendo pra int e somando
     if(soma > 255):
-        soma = 255
-    print(soma)
-
-    soma_mixed = e_table[int("0x0"+hex(soma)[2:3],0)][int("0x0"+hex(soma)[3:4],0)]
-    print(soma_mixed) #todo aqui nos trem que ta dando rrado
-    soma_mixed_final = l_table[int("0x0"+soma_mixed[2:3],0)][int("0x0"+soma_mixed[3:4],0)]
-    print(soma_mixed_final)
-    return soma_mixed_final
+        soma = 255 #nao deixar passar de FF a soma ou 255 em decimal
+    padding = hex(soma)[2:].zfill(2)
+    padding = "0x" + padding #aqui teria o resultado da soma antes de pegar o valor dele na e-table
+    print("Resultado PRÉ Etable")
+    print(padding)
+    resultado = get_e_table(padding) #aqui teria o resultado da soma retirado da e_table
+    print("Resultado Pós etable")
+    print(resultado)
+    return resultado #retorna esse resultado
             
 
 def main():
