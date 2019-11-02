@@ -3,7 +3,25 @@ from collections import deque
 
 key_schedule = [None] * 11
 multiply_matrix = [None] * 4
-s_box = [None] * 16
+s_box = [
+    ['0x63','0x7c','0x77','0x7b','0xf2','0x6b','0x6f','0xc5','0x30','0x01','0x67','0x2b','0xfe','0xd7','0xab','0x76'],
+    ['0xca','0x82','0xc9','0x7d','0xfa','0x59','0x47','0xf0','0xad','0xd4','0xa2','0xaf','0x9c','0xa4','0x72','0xc0'],
+    ['0xb7','0xfd','0x93','0x26','0x36','0x3f','0xf7','0xcc','0x34','0xa5','0xe5','0xf1','0x71','0xd8','0x31','0x15'],
+    ['0x04','0xc7','0x23','0xc3','0x18','0x96','0x05','0x9a','0x07','0x12','0x80','0xe2','0xeb','0x27','0xb2','0x75'],
+    ['0x09','0x83','0x2c','0x1a','0x1b','0x6e','0x5a','0xa0','0x52','0x3b','0xd6','0xb3','0x29','0xe3','0x2f','0x84'],
+    ['0x53','0xd1','0x00','0xed','0x20','0xfc','0xb1','0x5b','0x6a','0xcb','0xbe','0x39','0x4a','0x4c','0x58','0xcf'],
+    ['0xd0','0xef','0xaa','0xfb','0x43','0x4d','0x33','0x85','0x45','0xf9','0x02','0x7f','0x50','0x3c','0x9f','0xa8'],
+    ['0x51','0xa3','0x40','0x8f','0x92','0x9d','0x38','0xf5','0xbc','0xb6','0xda','0x21','0x10','0xff','0xf3','0xd2'],
+    ['0xcd','0x0c','0x13','0xec','0x5f','0x97','0x44','0x17','0xc4','0xa7','0x7e','0x3d','0x64','0x5d','0x19','0x73'],
+    ['0x60','0x81','0x4f','0xdc','0x22','0x2a','0x90','0x88','0x46','0xee','0xb8','0x14','0xde','0x5e','0x0b','0xdb'],
+    ['0xe0','0x32','0x3a','0x0a','0x49','0x06','0x24','0x5c','0xc2','0xd3','0xac','0x62','0x91','0x95','0xe4','0x79'],
+    ['0xe7','0xc8','0x37','0x6d','0x8d','0xd5','0x4e','0xa9','0x6c','0x56','0xf4','0xea','0x65','0x7a','0xae','0x08'],
+    ['0xba','0x78','0x25','0x2e','0x1c','0xa6','0xb4','0xc6','0xe8','0xdd','0x74','0x1f','0x4b','0xbd','0x8b','0x8a'],
+    ['0x70','0x3e','0xb5','0x66','0x48','0x03','0xf6','0x0e','0x61','0x35','0x57','0xb9','0x86','0xc1','0x1d','0x9e'],
+    ['0xe1','0xf8','0x98','0x11','0x69','0xd9','0x8e','0x94','0x9b','0x1e','0x87','0xe9','0xce','0x55','0x28','0xdf'],
+    ['0x8c','0xa1','0x89','0x0d','0xbf','0xe6','0x42','0x68','0x41','0x99','0x2d','0x0f','0xb0','0x54','0xbb','0x16'],
+]
+
 l_table = [None] * 16
 e_table = [None] * 16
 round_constant = [None] * 10
@@ -32,24 +50,7 @@ def gerar_multiply_matrix():
     multiply_matrix[2] = ['0x01','0x01','0x02','0x03']
     multiply_matrix[3] = ['0x03','0x01','0x01','0x02']
 
-def gerar_sbox(): #Popular a s-box
-    s_box[0]=['0x63','0x7c','0x77','0x7b','0xf2','0x6b','0x6f','0xc5','0x30','0x01','0x67','0x2b','0xfe','0xd7','0xab','0x76']
-    s_box[1]=['0xca','0x82','0xc9','0x7d','0xfa','0x59','0x47','0xf0','0xad','0xd4','0xa2','0xaf','0x9c','0xa4','0x72','0xc0']
-    s_box[2]=['0xb7','0xfd','0x93','0x26','0x36','0x3f','0xf7','0xcc','0x34','0xa5','0xe5','0xf1','0x71','0xd8','0x31','0x15']
-    s_box[3]=['0x04','0xc7','0x23','0xc3','0x18','0x96','0x05','0x9a','0x07','0x12','0x80','0xe2','0xeb','0x27','0xb2','0x75']
-    s_box[4]=['0x09','0x83','0x2c','0x1a','0x1b','0x6e','0x5a','0xa0','0x52','0x3b','0xd6','0xb3','0x29','0xe3','0x2f','0x84']
-    s_box[5]=['0x53','0xd1','0x00','0xed','0x20','0xfc','0xb1','0x5b','0x6a','0xcb','0xbe','0x39','0x4a','0x4c','0x58','0xcf']
-    s_box[6]=['0xd0','0xef','0xaa','0xfb','0x43','0x4d','0x33','0x85','0x45','0xf9','0x02','0x7f','0x50','0x3c','0x9f','0xa8']
-    s_box[7]=['0x51','0xa3','0x40','0x8f','0x92','0x9d','0x38','0xf5','0xbc','0xb6','0xda','0x21','0x10','0xff','0xf3','0xd2']
-    s_box[8]=['0xcd','0x0c','0x13','0xec','0x5f','0x97','0x44','0x17','0xc4','0xa7','0x7e','0x3d','0x64','0x5d','0x19','0x73']
-    s_box[9]=['0x60','0x81','0x4f','0xdc','0x22','0x2a','0x90','0x88','0x46','0xee','0xb8','0x14','0xde','0x5e','0x0b','0xdb']
-    s_box[10]=['0xe0','0x32','0x3a','0x0a','0x49','0x06','0x24','0x5c','0xc2','0xd3','0xac','0x62','0x91','0x95','0xe4','0x79']
-    s_box[11]=['0xe7','0xc8','0x37','0x6d','0x8d','0xd5','0x4e','0xa9','0x6c','0x56','0xf4','0xea','0x65','0x7a','0xae','0x08']
-    s_box[12]=['0xba','0x78','0x25','0x2e','0x1c','0xa6','0xb4','0xc6','0xe8','0xdd','0x74','0x1f','0x4b','0xbd','0x8b','0x8a']
-    s_box[13]=['0x70','0x3e','0xb5','0x66','0x48','0x03','0xf6','0x0e','0x61','0x35','0x57','0xb9','0x86','0xc1','0x1d','0x9e']
-    s_box[14]=['0xe1','0xf8','0x98','0x11','0x69','0xd9','0x8e','0x94','0x9b','0x1e','0x87','0xe9','0xce','0x55','0x28','0xdf']
-    s_box[15]=['0x8c','0xa1','0x89','0x0d','0xbf','0xe6','0x42','0x68','0x41','0x99','0x2d','0x0f','0xb0','0x54','0xbb','0x16']
-
+    
 def gerar_galois(): #Pouplar a l-table
     l_table[0]=['0x00','0x00','0x19','0x01','0x32','0x02','0x1a','0xc6','0x4b','0xc7','0x1b','0x68','0x33','0xee','0xdf','0x03']
     l_table[1]=['0x64','0x04','0xe0','0x0e','0x34','0x8d','0x81','0xef','0x4c','0x71','0x08','0xc8','0xf8','0x69','0x1c','0xc1']
@@ -233,22 +234,40 @@ def getRoundKey(rk):
     word_rk[0] = round_constant[rk] #popula o primeiro valor com o valor da round_constant respectivo
     return word_rk
 
+def gerar_padding(texto_simples):
+    if (len(texto_simples) % 16) != 0:
+        palavra = ''
+        index = 0
+        tamanho_total = 17
+        while index < tamanho_total:
+            if index == tamanho_total-1:
+                cifrar_texto(palavra)
+                palavra = ''
+                tamanho_total = tamanho_total + 16
+            if index < len(texto_simples):
+                palavra = palavra + texto_simples[index]
+                index = index + 1
+            else:
+                for pad in range(tamanho_total - len(texto_simples)):
+                    palavra = palavra + (str(tamanho_total - len(texto_simples)))
+                cifrar_texto(palavra)
+                return
+
 def cifrar_texto(texto_simples):
+    
     matriz_estado_ts = popular_matriz_estado(texto_simples) #cria uma matriz estado com o texto_simples q vamo cifra
-    print("Matriz texto simples")
-    print(matriz_estado_ts)
     matriz_estado_ts_xor = [None] * 4
     for i in range(4):
         matriz_estado_ts_xor[i] = xorList(matriz_estado_ts[i], key_schedule[0][i]) #faz xor dessa matriz com roundkey0
-    print(matriz_estado_ts_xor) #printa o xor dessa matriz
     matriz_rodada = matriz_estado_ts_xor #define que agora essa é a matriz que vamos usar
-    for rodada in range(1,2): #para cada umas das teoricamente 10 rodadas, ta só 2 pra testar
+    matriz_cifragem = [None] * 10
+    matriz_cifragem[0] = matriz_rodada
+    palavra_cifrada = None
+    for rodada in range(1,11): #para cada umas das teoricamente 10 rodadas, ta só 2 pra testar
         matriz_transposta = [None] * 4
-        print("ADDROUNDKEY ROUND "+str(rodada)) 
-        matriz_estado_ts_xor_sbox = get_matrix_sbox(matriz_rodada) #pega a matrizrodada do momento e pega todos os valores dela da sbox e joga nessa nossa nova matriz que vai ser a etapa subbyte
-        print("Subbyte") #printa a matriz completa da etapa subbyte
+        matriz_estado_ts_xor_sbox = None
+        matriz_estado_ts_xor_sbox = get_matrix_sbox(matriz_cifragem[rodada-1]) #pega a matrizrodada do momento e pega todos os valores dela da sbox e joga nessa nossa nova matriz que vai ser a etapa subbyte
         print(matriz_estado_ts_xor_sbox)
-        print("Just created matriz transposta")
         matriz_transposta = transpose_list(matriz_estado_ts_xor_sbox)
         matriz_rot_1 = deque(matriz_transposta[1])
         matriz_rot_2 = deque(matriz_transposta[2])
@@ -260,16 +279,41 @@ def cifrar_texto(texto_simples):
         matriz_transposta[2] = matriz_rot_2 
         matriz_transposta[3] = matriz_rot_3
         matriz_estado_ts_xor_sbox = transpose_list(matriz_transposta)
-        print("shiftrow") 
-        print(matriz_estado_ts_xor_sbox) #Printa a matriz da etapa shiftrow que é a rotação de cada linha 0,1,2,3 lá
-        print("Mixcolumn") #Eis aqui o problema
-        matriz_estado_mixcolumn = gerar_mixcolumn(matriz_estado_ts_xor_sbox) #Esse método vai retornar a nossa matriz mixcolumn
-        print(matriz_estado_mixcolumn)
+        if rodada != 10:
+            matriz_estado_mixcolumn = gerar_mixcolumn(matriz_estado_ts_xor_sbox) #Esse método vai retornar a nossa matriz mixcolumn
+        else:
+            matriz_estado_mixcolumn = matriz_estado_ts_xor_sbox
         addroundkey = [None] * 4
         for i in range(4):
             addroundkey[i] = xorList(matriz_estado_mixcolumn[i], key_schedule[rodada][i])
-        matriz_rodada = addroundkey
-        print(matriz_rodada)
+        if rodada != 10:
+            matriz_cifragem[rodada] = addroundkey
+        else:
+            palavra_cifrada = addroundkey
+    ind = 0
+    for e in matriz_cifragem:
+        apresentar_matriz(e, "AddRoundKey"+str(ind), True)
+        ind = ind + 1
+    apresentar_matriz(palavra_cifrada, "AddRoundKey 10 Final", True)
+    arquivo_output = open("arquivocifrado", "wb")
+    for i in range(len(palavra_cifrada)):
+        for x in range(len(palavra_cifrada[i])):
+            valor = palavra_cifrada[i][x]
+            palavra_cifrada_bytes = bytes(valor, encoding="utf-8")
+            arquivo_output.write(palavra_cifrada_bytes)
+
+def apresentar_matriz(matriz, texto="", transposta = False):
+    if transposta:
+        matriz = transpose_list(matriz)
+
+    if texto != "":
+        print(texto)
+
+    for i in range(len(matriz)):
+        for j in range(len(matriz[i])):
+            print(matriz[i][j] + " " ,end="")
+        print()
+    print()
 
 def transpose_list(list):
     new_list = [None] * 4
@@ -288,21 +332,13 @@ def gerar_mixcolumn(matriz):
         for x in range(4):
             this_value = this_word
             this_multiplier = multiply_matrix[x] #pega a coluna da matriz de multiplicacao
-            print(this_value) #saber qual é a word que estamos usando pra multiplicar
             new_value_0 = multiply_galois(this_value[0] ,this_multiplier[0])
-            print(new_value_0) #esse seria o resultado daquela formula b1 = r1 * 1 (alterando claro os valores)
             new_value_1 = multiply_galois(this_value[1] ,this_multiplier[1])
-            print(new_value_1) #seguindo a logica esse seria o b1 = r2*2 (mas com seu respectivos valores)
             new_value_2 = multiply_galois(this_value[2] ,this_multiplier[2])
-            print(new_value_2)#mesma coisa
             new_value_3 = multiply_galois(this_value[3] ,this_multiplier[3])
-            print(new_value_3) #mesma coisa teoricamente cada new_value desse tem os valores pro calculo de bx = rx * x xor rx * x xor rx * x 
             new_xor_0 = xorHex(new_value_0,new_value_1) #aqui vamo pega e efetuar os xor da formula
-            print(new_xor_0) #faz o xor
             new_xor_1 = xorHex(new_xor_0,new_value_2)
-            print(new_xor_1) #faz o xor do xor anterior com o prox valor
             new_xor_2 = xorHex(new_xor_1,new_value_3)
-            print(new_xor_2) #faz o xor do xor anterior com o ultimo valor
             word_final[x] = new_xor_2 #joga esse valor na nossa lista
         new_matrix[i] = word_final
     return new_matrix
@@ -313,43 +349,37 @@ def get_e_table(value):
     return e_table[int(valor_lin,0)][int(valor_col,0)]
     
 def multiply_galois(fv,sv):
-    if fv == "0x00": #se algum desses valores for 0 ou 1 entra naquelas regrinhas
-        return "0x00"
-    elif sv == "0x00":
+    if fv == "0x00" or sv == "0x00":#se algum desses valores for 0 ou 1 entra naquelas regrinhas
         return "0x00"
     elif fv == "0x01":
         return sv
     elif sv == "0x01":
         return fv
-    print("Multiplicando "+fv+sv) #printa quais valores a gente ta fazendo a multiplicação de galois mixcolumn
     valor_lin = "0x0"+fv[2:3]
     valor_col = "0x0"+fv[3:4]
     resultado_0 = l_table[int(valor_lin,0)][int(valor_col,0)] #pega na l-table o valor do primeiro valor fv
     valor_lin = "0x0"+sv[2:3]
     valor_col = "0x0"+sv[3:4]
     resultado_1 = l_table[int(valor_lin,0)][int(valor_col,0)] #pega na l-table o valor do segundo valor sv
-    print(resultado_0) #printa esses 2 valores que pegamo da l-table
-    print(resultado_1)
     soma = int(resultado_0,0) + int(resultado_1,0) #se nao cai em nenhuma dessas excecoes ele soma os 2 valores, convertendo pra int e somando
     if(soma > 255):
-        soma = 255 #nao deixar passar de FF a soma ou 255 em decimal
+        soma = soma - 255
     padding = hex(soma)[2:].zfill(2)
     padding = "0x" + padding #aqui teria o resultado da soma antes de pegar o valor dele na e-table
-    print("Resultado PRÉ Etable")
-    print(padding)
     resultado = get_e_table(padding) #aqui teria o resultado da soma retirado da e_table
-    print("Resultado Pós etable")
-    print(resultado)
     return resultado #retorna esse resultado
             
 
 def main():
-    gerar_sbox()
     gerar_galois()
     gerar_roundConstant()
     gerar_multiply_matrix()
     gerar_e_table()
-    gerar_chave("ABCDEFGHIJKLMNOP")
+    print("Digite a localização do arquivo a ser cifrado eg:","c:/users/usuario/texto.txt")
+    arquivo = open(input(), 'r')
+    print("Digite a chave a ser usada: ", end='')
+    chave = input()
+    gerar_chave(chave)
     print(key_schedule[0])
     print(key_schedule[1])
     print(key_schedule[2])
@@ -361,7 +391,7 @@ def main():
     print(key_schedule[8])
     print(key_schedule[9])
     print(key_schedule[10])
-    cifrar_texto("DESENVOLVIMENTO!")
+    gerar_padding(arquivo.read())
 
 
 if __name__ == "__main__":
