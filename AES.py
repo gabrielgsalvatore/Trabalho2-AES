@@ -286,7 +286,7 @@ def gerar_padding(texto_simples):
 
 def cifrar_texto(texto_simples):
     matriz_estado_ts = None
-    matriz_estado_ts = popular_matriz_estado(texto_simples) #cria uma matriz estado com o texto_simples q vamo cifra
+    matriz_estado_ts = popular_matriz_estado(texto_simples) #cria uma matriz estado com o texto_simples
     matriz_estado_ts_xor = [None] * 4
     for i in range(4):
         matriz_estado_ts_xor[i] = xorList(matriz_estado_ts[i], key_schedule[0][i]) #faz xor dessa matriz com roundkey0
@@ -294,10 +294,10 @@ def cifrar_texto(texto_simples):
     matriz_cifragem = [None] * 10
     matriz_cifragem[0] = matriz_rodada
     palavra_cifrada = None
-    for rodada in range(1,11): #para cada umas das teoricamente 10 rodadas, ta só 2 pra testar
+    for rodada in range(1,11): #para cada umas das 10 rodadas
         matriz_transposta = [None] * 4
         matriz_estado_ts_xor_sbox = None
-        matriz_estado_ts_xor_sbox = get_matrix_sbox(matriz_cifragem[rodada-1]) #pega a matrizrodada do momento e pega todos os valores dela da sbox e joga nessa nossa nova matriz que vai ser a etapa subbyte
+        matriz_estado_ts_xor_sbox = get_matrix_sbox(matriz_cifragem[rodada-1]) #pega a matriz rodada do momento e pega todos os valores dela da sbox e joga nessa nossa nova matriz que vai ser a etapa subbyte
         matriz_transposta = transpose_list(matriz_estado_ts_xor_sbox)
         matriz_rot_1 = deque(matriz_transposta[1])
         matriz_rot_2 = deque(matriz_transposta[2])
@@ -349,10 +349,9 @@ def transpose_list(list):
 
 def gerar_mixcolumn(matriz):
     new_matrix = [None] * 4
-    matriz_transp = matriz #ignora o nome antes estava transpondo a matriz mas agora ela ja vem transposta
 
     for i in range(4):
-        this_word = matriz_transp[i] #pega a word que vamos multiplicar
+        this_word = matriz[i] #pega a word que vamos multiplicar
         word_final = [None] * 4
         for x in range(4):
             this_value = this_word
@@ -374,7 +373,7 @@ def get_e_table(value):
     return e_table[int(valor_lin,0)][int(valor_col,0)]
     
 def multiply_galois(fv,sv):
-    if fv == "0x00" or sv == "0x00":#se algum desses valores for 0 ou 1 entra naquelas regrinhas
+    if fv == "0x00" or sv == "0x00":#se algum desses valores for 0 ou 1 entra nas excecoes
         return "0x00"
     elif fv == "0x01":
         return sv
@@ -390,8 +389,8 @@ def multiply_galois(fv,sv):
     if(soma > 255):
         soma = soma - 255
     padding = hex(soma)[2:].zfill(2)
-    padding = "0x" + padding #aqui teria o resultado da soma antes de pegar o valor dele na e-table
-    resultado = get_e_table(padding) #aqui teria o resultado da soma retirado da e_table
+    padding = "0x" + padding 
+    resultado = get_e_table(padding) #resultado da soma da e-table
     return resultado #retorna esse resultado
             
 
