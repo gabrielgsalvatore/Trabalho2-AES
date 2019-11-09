@@ -246,24 +246,17 @@ def gerar_padding(texto_simples):
                 palavra = palavra + bytes([texto_simples[index]])
                 index = index + 1
             elif index < tamanho_total:
-                if (tamanho_total - 1) - index < 9:
+                if (tamanho_total - 1) - index < 17:
                     padding = (tamanho_total - 1) - index
                     while ((tamanho_total - 1) - index) != 0:
                         palavra = palavra + bytes([padding])
                         index = index + 1
                     cifrar_texto(palavra)
                     progresso_atual = progresso_atual + 1
-                    # t._stop()
                     return
-                elif tamanho_total - index < 16:
-                    padding = (tamanho_total - 9) - index
-                    while ((tamanho_total - 9) - index) != 0:
-                        palavra = palavra + str(padding)
-                        index = index + 1
     else:
         cifrar_texto(texto_simples)
         progresso_atual = progresso_atual + 1
-        # t._stop()
 
 def cifrar_texto(texto_simples):
     matriz_estado_ts = None
