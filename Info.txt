@@ -1,0 +1,19 @@
+Alunos: Gabriel Garcia Salvador
+	Sidnei Lanser
+
+O Algoritmo teoricamente cifra qualquer tipo de arquivo, testado com .txt e sem extensão binário.
+
+1 - deve informar o nome para o arquivo que vai ser salvo o texto cifrado, apenas o nome sem o path, vai ser salvo por padrão dentro da raiz do projeto.
+
+2 - deve dizer o path do arquivo texto simples c:/arquivo.txt ou c:/arquivo caso seja binário sem extensão
+
+3 - digitar a chave separada por vírgula, ex: 41,42,43,44,45,46,47,48,49,4a,4b,4c,4d,4e,4f,50
+
+4 - caso seja um arquivo grande será printado uma porcentagem do progresso
+
+5 - retorna mensagem de sucesso e finaliza.
+
+Quanto ao padding, caso o arquivo tenha exatamente 16bytes, também vai ser gerado outra matriz estado de 16bytes que será cifrada juntamente.
+Caso o arquivo tenha menos de 16bytes, será posto um padding do tamanho restante na matriz estado.
+
+Ex: Arquivo 4 bytes, vai ter 12 bytes subsequentes com o valor 12 binário (0c).

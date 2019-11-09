@@ -232,31 +232,28 @@ def gerar_padding(texto_simples):
     progresso_atual = 0
     t = threading.Thread(target=progresso)
     t.start()
-    if len(texto_simples) > 16:
-        palavra = b''
-        index = 0
-        tamanho_total = 17
-        while index < tamanho_total:
-            if index == tamanho_total-1:
+    palavra = b''
+    index = 0
+    tamanho_total = 17
+    while index < tamanho_total:
+        if index == tamanho_total-1:
+            cifrar_texto(palavra)
+            palavra = b''
+            tamanho_total = tamanho_total + 16
+            progresso_atual = progresso_atual + 1
+        if index < len(texto_simples):
+            palavra = palavra + bytes([texto_simples[index]])
+            index = index + 1
+        elif index < tamanho_total:
+            if (tamanho_total - 1) - index < 17:
+                padding = (tamanho_total - 1) - index
+                while ((tamanho_total - 1) - index) != 0:
+                    palavra = palavra + bytes([padding])
+                    index = index + 1
                 cifrar_texto(palavra)
-                palavra = b''
-                tamanho_total = tamanho_total + 16
                 progresso_atual = progresso_atual + 1
-            if index < len(texto_simples):
-                palavra = palavra + bytes([texto_simples[index]])
-                index = index + 1
-            elif index < tamanho_total:
-                if (tamanho_total - 1) - index < 17:
-                    padding = (tamanho_total - 1) - index
-                    while ((tamanho_total - 1) - index) != 0:
-                        palavra = palavra + bytes([padding])
-                        index = index + 1
-                    cifrar_texto(palavra)
-                    progresso_atual = progresso_atual + 1
-                    return
-    else:
-        cifrar_texto(texto_simples)
-        progresso_atual = progresso_atual + 1
+                return
+
 
 def cifrar_texto(texto_simples):
     matriz_estado_ts = None
